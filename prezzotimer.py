@@ -29,12 +29,12 @@ class PrezzotimerApp:
 
         # Duration
         tk.Label(self.input_frame, text='Presentation Duration (minutes):').grid(row=0, column=0, sticky='e')
-        self.duration_var = tk.StringVar(value='10')  # Default for development
+        self.duration_var = tk.StringVar(value='120')  # Default duration
         tk.Entry(self.input_frame, textvariable=self.duration_var).grid(row=0, column=1)
 
         # Total slides
         tk.Label(self.input_frame, text='Total Slides:').grid(row=1, column=0, sticky='e')
-        self.slides_var = tk.StringVar(value='100')  # Default for development
+        self.slides_var = tk.StringVar(value='260')  # Default total slides
         tk.Entry(self.input_frame, textvariable=self.slides_var).grid(row=1, column=1)
 
         # Start time (default to next half hour or hour)
@@ -44,7 +44,7 @@ class PrezzotimerApp:
 
         # Buffer
         tk.Label(self.input_frame, text='Buffer (minutes, end early):').grid(row=3, column=0, sticky='e')
-        self.buffer_var = tk.StringVar(value='10')  # Default buffer
+        self.buffer_var = tk.StringVar(value='15')  # Default buffer
         tk.Entry(self.input_frame, textvariable=self.buffer_var).grid(row=3, column=1)
 
         # Start button
@@ -55,8 +55,12 @@ class PrezzotimerApp:
         self.timer_frame = tk.Frame(root)
         self.timer_label = tk.Label(self.timer_frame, text='Timer will appear here', font=('Arial', 24))
         self.timer_label.pack(pady=20)
-        self.slide_label = tk.Label(self.timer_frame, text='Ideal Slide: --', font=('Arial', 18))
-        self.slide_label.pack()
+        self.time_remaining_label = tk.Label(self.timer_frame, text='', font=('Arial', 18))
+        self.time_remaining_label.pack()
+        self.target_slide_label = tk.Label(self.timer_frame, text='Target slide:', font=('Arial', 18))
+        self.target_slide_label.pack()
+        self.slide_number_label = tk.Label(self.timer_frame, text='--', font=('Arial', 96))
+        self.slide_number_label.pack()
 
         self.elapsed_label = tk.Label(self.timer_frame, text='', font=('Arial', 14))
         self.elapsed_label.pack(pady=5)
@@ -150,7 +154,9 @@ class PrezzotimerApp:
             start_str = self.start_time.strftime('%-I:%M%p').lower()
             now_str = now.strftime('%-I:%M%p').lower()
             self.timer_label.config(text=f'Waiting to start at {start_str}')
-            self.slide_label.config(text='')
+            self.time_remaining_label.config(text='')
+            self.target_slide_label.config(text='')
+            self.slide_number_label.config(text='--')
             self.elapsed_label.config(text='')
             # Show current time in a smaller font below
             if not hasattr(self, 'current_time_label'):
@@ -176,6 +182,10 @@ class PrezzotimerApp:
         if hasattr(self, 'begin_in_label'):
             self.begin_in_label.destroy()
             del self.begin_in_label
+        # Clear the waiting message
+        self.timer_label.config(text='')
+        # Restore the target slide label
+        self.target_slide_label.config(text='Target slide:')
         elapsed = now - self.start_time
         total_seconds = self.effective_duration * 60
         elapsed_seconds = elapsed.total_seconds()
@@ -187,8 +197,8 @@ class PrezzotimerApp:
         elapsed_str = str(timedelta(seconds=int(elapsed_seconds)))
         self.elapsed_label.config(text=f'Elapsed: {elapsed_str}')
         ideal_slide = self.calculate_ideal_slide(elapsed_seconds, total_seconds, self.total_slides)
-        self.timer_label.config(text=f'Ideal Slide: {ideal_slide}')
-        self.slide_label.config(text=f'Time Remaining: {str(timedelta(seconds=int(total_seconds - elapsed_seconds)))}')
+        self.slide_number_label.config(text=str(ideal_slide))
+        self.time_remaining_label.config(text=f'Time Remaining: {str(timedelta(seconds=int(total_seconds - elapsed_seconds)))}')
         if self.timer_running:
             self.root.after(1000, self.update_timer)
 
