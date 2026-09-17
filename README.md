@@ -25,7 +25,7 @@ Homebrew Python may need `brew install python-tk` first.
 | 🕰️ Start time | `2:30pm`, `1430`, `14:00` and `2.30` all work |
 | 🪗 Buffer | minutes held back at the end for Q&A |
 
-Duration includes both time presenting plus the buffer. So an 80-minute duration with a 10-minute buffer paces the speaker to present for 70 minutes.
+Duration includes both time presenting plus the buffer. So the 90-minute duration with a 10-minute buffer shown above paces the speaker to present for 80 minutes.
 
 For my presentations I use two monitors. Here's my implementation:
 
